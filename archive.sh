@@ -3,21 +3,29 @@
 
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S") #Check the time
 echo "INFO: $TIMESTAMP archive script started" >> archive.log
-echo "INFO: $TIMESTAMP archive script started"
 
 givehelp() {
     echo "Usage: $0 "
     echo "Edit the source and directory files in the configuration file!"
     echo "Options:"
     echo "  -h, --help       Display help message"
+    echo "  -d, --dry-run   Perform a dry run (no actual archive will be created)"
 }
 
+
+DRYRUN=0
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     givehelp
     exit 0
 fi
 
+if [ "$1" == "-d" ] || [ "$1" == "--dry-run" ]; then
+    DRYRUN=1
+fi
+
 #echo "debug code 0"
+
+
 
 
 
@@ -54,10 +62,28 @@ fi
 #echo "debug code 4"
 
 
+#check if .bassignore.txt exists and if it contains stuff to exclude
+EXCLUDE_OPT=""
+if [ -f ".bassignore.txt" ]; then
+    EXCLUDE_OPT="--exclude-from=.bassignore.txt"
+    echo "INFO: using exclude file .bassignore.txt" >> archive.log
+fi
 
-echo "INFO: $TIMESTAMP Backing up from '$SOURCEDIRECTORY' to '$TARGETDIRECTORY'." >> archive.log
 
 BACKUP_FOLDER="$TARGETDIRECTORY/backup_$TIMESTAMP.tar.gz" #Create a backup folder name
+
+if [ "$DRYRUN" -eq 1 ]; then
+    # list files that the script would archive, without actually archiving
+    # -c = create, -v = verbose (lists files), -f /dev/null writes to nowhere
+    tar -cvf /dev/null $EXCLUDE_OPT -C "$SOURCEDIRECTORY" . || {
+        echo "Error: tar failed during dry-run listing." >&2
+        exit 1
+    }
+    echo "DRY RUN complete. No files were written."
+    exit 0
+fi
+
+echo "INFO: $TIMESTAMP Backing up from '$SOURCEDIRECTORY' to '$TARGETDIRECTORY'." >> archive.log
 mkdir -p "$BACKUP_FOLDER" #Create the backup folder
 cp -r "$SOURCEDIRECTORY" "$BACKUP_FOLDER" #Copy the source directory to the backup folder
 
