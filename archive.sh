@@ -73,6 +73,7 @@ fi
 BACKUP_FOLDER="$TARGETDIRECTORY/backup_$TIMESTAMP.tar.gz" #Create a backup folder name
 
 if [ "$DRYRUN" -eq 1 ]; then
+    echo "DRY RUN: files that would be archived (respecting .bassignore.txt if present):"
     # list files that the script would archive, without actually archiving
     # -c = create, -v = verbose (lists files), -f /dev/null writes to nowhere
     tar -cvf /dev/null $EXCLUDE_OPT -C "$SOURCEDIRECTORY" . || {
