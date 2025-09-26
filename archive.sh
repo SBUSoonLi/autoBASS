@@ -1,12 +1,13 @@
 # Script for MVP 
 # cd /mnt/c/Users/poopi/OneDrive\ -\ Nanyang\ Technological\ University/Semester\ 3.1\ Exchange/CSE\ 337\ Scripting\ Language/Assignment\ 1
 
-
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S") #Check the time
 echo "INFO: $TIMESTAMP archive script started" >> archive.log
+echo "INFO: $TIMESTAMP archive script started"
 
 givehelp() {
-    echo "Usage: $0 [source_directory] [target_directory]"
+    echo "Usage: $0 "
+    echo "Edit the source and directory files in the configuration file!"
     echo "Options:"
     echo "  -h, --help       Display help message"
 }
@@ -16,28 +17,41 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     exit 0
 fi
 
-if [[ $# -eq 0 ]]; then
-    givehelp
-    exit 1
-fi
+#echo "debug code 0"
 
 
 
-SOURCEDIRECTORY=$1
-TARGETDIRECTORY=$2
+#echo "debug code 1"
+
+SOURCEDIRECTORY=$(grep "^source_directory=" archive.conf | cut -d= -f2)
+TARGETDIRECTORY=$(grep "^target_directory=" archive.conf | cut -d= -f2)
 
 echo "Source Directory: $SOURCEDIRECTORY"
 echo "Target Directory: $TARGETDIRECTORY"
+
+
+
+
+
+
+
+
+
+#echo "debug code 2"
 
 if [ ! -d "$SOURCEDIRECTORY" ]; then
     echo "Error: $TIMESTAMP Source directory does not exist or could not be created. Exiting" >> archive.log
     exit 1
 fi
 
+#echo "debug code 3"
+
 if [ ! -d "$TARGETDIRECTORY" ]; then
     echo "Error: $TIMESTAMP Target directory does not exist or could not be created. Exiting" >> archive.log
     exit 1
 fi
+
+#echo "debug code 4"
 
 
 
